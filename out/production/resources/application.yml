@@ -1,0 +1,22 @@
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/view/
+      suffix: .jsp
+
+  datasource:                           # 指定数据源
+    url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: zjp
+    password: zjp
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+    type-aliases-package: cn.tedu.ant.sys.entity  #指定实体类位置
+    mapper-locations: classpath:/mapper/sys/*Mapper.xml #指定xml文件位置，classpath代表resources目录下的文件
+    check-config-location: true
+
+server:
+  servlet:
+    jsp:
+      init-parameters:
+        development: true

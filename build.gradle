@@ -1,0 +1,77 @@
+//buildscript中的代码总是最先执行的
+buildscript {
+    // ext 用于定义动态属性
+    ext {
+        springBootVersion = '2.2.4.RELEASE'
+        springDependencyVersion = '1.0.9.RELEASE'
+    }
+    // 使用了 Maven 的本地和中央仓库
+    repositories {
+        maven {
+            url 'https://repo.spring.io/release'
+        }
+        mavenLocal()
+        mavenCentral()
+    }
+    //依赖关系
+    dependencies {
+        classpath(// classpath 声明说明了在执行其余的脚本时，ClassLoader 可以使用这些依赖项
+                "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}",
+                "io.spring.gradle:dependency-management-plugin:${springDependencyVersion}"
+        )
+    }
+}
+
+//使用插件
+apply {
+    plugin("java")
+    plugin("maven")
+    plugin("idea")
+    plugin("org.springframework.boot")
+    plugin("io.spring.dependency-management")
+}
+
+group 'com.test.springboot'
+version '1.0'
+
+//指定编译的jdk版本
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    maven {
+        url 'https://repo.spring.io/release'
+    }
+//    使用本地maven仓库
+    mavenLocal()
+//    使用中央maven仓库
+    mavenCentral()
+}
+
+//依赖关系
+dependencies {
+    //编译期依赖compile 运行期依赖runtime
+    compile(
+            "org.springframework.boot:spring-boot-starter-web"
+    )
+    compile 'jstl:jstl:1.2'
+    //加载jsp页面需要
+    compile 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    //mybatis-plus
+    compile "com.baomidou:mybatis-plus-boot-starter:3.3.1.tmp"
+    compile "com.baomidou:mybatis-plus-generator:3.3.1.tmp"
+    compile "org.apache.velocity:velocity-engine-core:2.2"
+
+//    //配置mybatis 数据源
+//    compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.0")
+    // 添加 MySQL连接驱动 的依赖
+    compile('mysql:mysql-connector-java:6.0.5')
+
+    //热更新---自动更新jsp页面
+    compile("org.springframework.boot:spring-boot-devtools")
+    //json
+    compile group: 'com.alibaba', name: 'fastjson', version:'1.2.41'
+    //测试
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
+}

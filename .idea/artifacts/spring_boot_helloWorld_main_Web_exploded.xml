@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="spring-boot-helloWorld.main:Web exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/spring_boot_helloWorld_main_Web_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="spring-boot-helloWorld.main/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="spring-boot-helloWorld.main" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
