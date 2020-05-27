@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @MapperScan("cn.tedu.ant.*.mapper")//启动类中添加这句，扫描dao文件
 //("com.baomidou.springboot.*.mapper")
 public class RunApp extends SpringBootServletInitializer {
+    //这个分支解决53号问题。。已解决53号问题
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         return builder.sources(RunApp.class);
