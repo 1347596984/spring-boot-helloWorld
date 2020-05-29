@@ -1,7 +1,9 @@
 package cn.tedu.ant.sys.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
 
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.io.Serializable;
 
@@ -23,16 +25,24 @@ public class User implements Serializable {
     private Integer id;
 
     @TableField(value = "name")
+    @NotEmpty(message = "名称不能为空")
     private String name;
 
     //updateStrategy    该字段可以设置为null
     @TableField(value = "age", updateStrategy = FieldStrategy.IGNORED)
+    @NotNull(message = "年龄不能为空")
+    @Max(value = 999, message = "年龄最大不能超过3位数")
+    @Min(value = 1, message = "年龄最小不能小于1")
     private Integer age;
 
     @TableField(value = "email")
+    @NotEmpty(message = "邮箱不能为空")
+    @Email(message = "邮箱格式错误")
     private String email;
 
     @TableField(value = "birthday")
+    @NotNull(message = "出生日期不能为空")
+    @Past(message = "日期不能大于现在")
     private LocalDate birthday;
 
 

@@ -1,6 +1,7 @@
 package cn.tedu.ant.sys.controller;
 
 
+import cn.tedu.ant.sys.entity.JSONResult;
 import cn.tedu.ant.sys.entity.User;
 import cn.tedu.ant.sys.service.IUserService;
 import cn.tedu.common.BaseController;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -36,12 +38,10 @@ public class VueElementUiUserController extends BaseController {
 
     /**
      * 查询用户信息页面
-     * @param request
-     * @param response
      * @return
      */
     @RequestMapping("/queryUserView")
-    public ModelAndView queryUserView(HttpServletRequest request, HttpServletResponse response){
+    public ModelAndView queryUserView(){
         ModelAndView mav = new ModelAndView("/user/vueEle/user_query_list_page");
         return mav;
     }
@@ -52,12 +52,13 @@ public class VueElementUiUserController extends BaseController {
      */
     @RequestMapping("/queryUserData")
     @ResponseBody
-    public String queryUserData(@RequestBody Map<String, Object> map){
-        JSONObject jsonObject = new JSONObject();
+    public JSONResult queryUserData(@RequestBody Map<String, Object> map){
         Page<User> pager = iUserService.getUserByMap(map);
-        jsonObject.put("map", map);
-        jsonObject.put("page", pager);
-        return jsonObject.toJSONString();
+        JSONResult<Page> jsonResult = new JSONResult<Page>();
+        jsonResult.setCode(JSONResult.OK);
+        jsonResult.setMsg("查询成功");
+        jsonResult.setData(pager);
+        return jsonResult;
     }
 
     /**
@@ -66,8 +67,12 @@ public class VueElementUiUserController extends BaseController {
      */
     @RequestMapping("/saveAddUser")
     @ResponseBody
-    public boolean saveAddUser(@RequestBody User user){
-        return iUserService.save(user);
+    public JSONResult saveAddUser(@RequestBody @Valid User user){
+        JSONResult<Boolean> jsonResult = new JSONResult<Boolean>();
+        jsonResult.setCode(JSONResult.OK);
+        jsonResult.setMsg("保存成功");
+        jsonResult.setData(iUserService.save(user));
+        return jsonResult;
     }
 
     /**
@@ -76,8 +81,12 @@ public class VueElementUiUserController extends BaseController {
      */
     @RequestMapping("/saveSetUser")
     @ResponseBody
-    public boolean saveSetUser(@RequestBody User user){
-        return iUserService.updateById(user);
+    public JSONResult saveSetUser(@RequestBody @Valid User user){
+        JSONResult<Boolean> jsonResult = new JSONResult<Boolean>();
+        jsonResult.setCode(JSONResult.OK);
+        jsonResult.setMsg("保存成功");
+        jsonResult.setData(iUserService.updateById(user));
+        return jsonResult;
     }
 
     /**
@@ -86,20 +95,28 @@ public class VueElementUiUserController extends BaseController {
      */
     @RequestMapping("/deleteUser")
     @ResponseBody
-    public boolean deleteUser(@RequestBody User user){
-        return iUserService.removeById(user.getId());
+    public JSONResult deleteUser(@RequestBody Integer id){
+        JSONResult<Boolean> jsonResult = new JSONResult<Boolean>();
+        jsonResult.setCode(JSONResult.OK);
+        jsonResult.setMsg("删除成功");
+        jsonResult.setData(iUserService.removeById(id));
+        return jsonResult;
     }
+
 
     /**
      * 获取用户详情--数据
-     * @param param
+     * @param id
      * @return
      */
     @RequestMapping("/userDetailData")
     @ResponseBody
-    public String userDetailData(@RequestBody User param){
-        User user = iUserService.getById(param.getId());
-        return JSONObject.toJSONString(user);
+    public JSONResult userDetailData(@RequestBody Integer id){
+        JSONResult<User> jsonResult = new JSONResult<User>();
+        jsonResult.setCode(JSONResult.OK);
+        jsonResult.setMsg("查询成功");
+        jsonResult.setData(iUserService.getById(id));
+        return jsonResult;
     }
 
 }

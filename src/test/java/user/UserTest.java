@@ -2,9 +2,7 @@ package user;
 
 import cn.tedu.RunApp;
 import cn.tedu.ant.sys.entity.User;
-import cn.tedu.ant.sys.mapper.UserMapper;
 import cn.tedu.ant.sys.service.IUserService;
-import cn.tedu.common.CustomIdGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -31,9 +29,6 @@ public class UserTest {
 
     @Autowired
     private IUserService iUserService;
-
-    @Autowired
-    private CustomIdGenerator customIdGenerator;
 
     public User getUser(){
         User user = new User();

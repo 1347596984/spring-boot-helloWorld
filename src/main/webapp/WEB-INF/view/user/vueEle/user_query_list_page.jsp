@@ -103,17 +103,17 @@
             @close="cleanUserData('userData')"
             center>
         <el-form :model="userData" :inline="true" :rules="rules" ref="userData" label-width="200px" class="demo-form-inline">
-            <el-form-item label="名称" prop="name">
+            <el-form-item label="名称" >
                 <el-input v-model="userData.name" maxlength="30"></el-input>
             </el-form-item>
-            <el-form-item label="年龄" prop="age">
+            <el-form-item label="年龄" >
                 <el-input type="age" v-model.number="userData.age" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
                           maxlength="3" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="邮箱" prop="email">
+            <el-form-item label="邮箱" >
                 <el-input v-model="userData.email" maxlength="30"></el-input>
             </el-form-item>
-            <el-form-item label="出生日期" prop="birthday">
+            <el-form-item label="出生日期">
                 <el-date-picker v-model="userData.birthday" type="date"
                                 placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
@@ -131,17 +131,17 @@
             @close="cleanUserData('userData')"
             center>
         <el-form :model="userData" :inline="true" :rules="rules" ref="userData" label-width="200px" class="demo-form-inline">
-            <el-form-item label="名称" prop="name">
+            <el-form-item label="名称">
                 <el-input v-model="userData.name" maxlength="30"></el-input>
             </el-form-item>
-            <el-form-item label="年龄" prop="age">
+            <el-form-item label="年龄">
                 <el-input type="age" v-model.number="userData.age" onkeyup="this.value=this.value.replace(/[^\d.]/g,'');"
                           maxlength="3" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="邮箱" prop="email">
+            <el-form-item label="邮箱" >
                 <el-input v-model="userData.email" maxlength="30"></el-input>
             </el-form-item>
-            <el-form-item label="出生日期" prop="birthday">
+            <el-form-item label="出生日期">
                 <el-date-picker v-model="userData.birthday" type="date"
                                 placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
@@ -309,10 +309,17 @@
                 resultData.loading = true;
                 axios.post('<%=request.getContextPath()%>/sys/user/ele/queryUserData', this.queryParam)
                  .then(function (response){
-                    resultData.queryParam = response.data.map;
-                    resultData.page = response.data.page;
-                    resultData.queryParam.page = response.data.page.current;
-                    resultData.loading = false;
+                     resultData.loading = false;
+                     var result = response.data;
+                     console.log("result", result)
+                     if(result.code == 100){
+                         resultData.page = result.data;
+                         console.log("page", resultData.page, "data", result.data.page);
+                         resultData.queryParam.page = result.data.current;
+                     } else {
+                         this.$message({ message: '数据查询失败', showClose: true, duration: 1000, type: 'error' });
+                     }
+
                 }).catch(function (error){
                     resultData.loading = false;
                 })
@@ -340,9 +347,10 @@
             saveUser(formName, view){
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        axios.post('<%=request.getContextPath()%>/sys/user/ele/saveAddUser', this[formName]).then(function (response) {  //处理后台返回的数据。
-                            if(response.data){
-                                vm.$message({ message: '保存成功', showClose: true, duration: 1000, type: 'success',
+                        axios.post('<%=request.getContextPath()%>/sys/user/ele/saveAddUser', this[formName]).then(function (response) {
+                            var result = response.data;
+                            if(result.code > 0){
+                                vm.$message({ message: result.msg, showClose: true, duration: 1000, type: 'success',
                                     onClose: function(){
                                         vm.userData = vm.newUser();
                                         vm[view] = false;
@@ -350,11 +358,9 @@
                                     }
                                 });
                             } else {
-                                vm.$message({ message: '用户信息保存失败', showClose: true, duration: 1000, type: 'error' });
+                                vm.$message({ message: result.msg, showClose: true, duration: 1000, type: 'error' });
                             }
-                        }).catch(function (error) {  //发生错误时的处理
-                            vm.$message({ message: '用户信息保存失败', showClose: true, duration: 1000, type: 'error' });
-                        });
+                        })
                     } else {
                         this.$message({ message: '请填写完必填项', showClose: true, duration: 1000, type: 'warning' });
                     }
@@ -364,10 +370,14 @@
             edit(row) {
                 this.editView = true
                 this.userData.id = row.id;
-                axios.post('<%=request.getContextPath()%>/sys/user/ele/userDetailData' , this.userData).then(function(response){
-                    vm.userData = response.data
-                }).catch(function(error){
-                    vm.$message({ message: '用户信息获取失败', showClose: true, duration: 1000, type: 'error' });
+                axios.post('<%=request.getContextPath()%>/sys/user/ele/userDetailData' , this.userData)
+                .then(function(response){
+                    var result = response.data;
+                    if(result.code == 100){
+                        vm.userData = response.data
+                    } else {
+                        vm.$message({ message: "数据查询失败", showClose: true, duration: 1000, type: 'error' });
+                    }
                 })
             },
             //保存维护信息
@@ -376,8 +386,9 @@
                     if (valid) {
                         axios.post('<%=request.getContextPath()%>/sys/user/ele/saveSetUser', this[formName])
                         .then(function (response) {  //处理后台返回的数据。
-                            if(response.data){
-                                vm.$message({message: '保存成功', showClose: true, duration: 1000, type: 'success',
+                            var result = response.data;
+                            if(result.code == 100){
+                                vm.$message({message: result.msg, showClose: true, duration: 1000, type: 'success',
                                     onClose: function(){
                                         vm.userData = vm.newUser();
                                         vm[view] = false;
@@ -385,11 +396,9 @@
                                     }
                                 });
                             } else {
-                                vm.$message({ message: '用户信息保存失败', showClose: true, duration: 1000, type: 'error' });
+                                vm.$message({ message: result.msg, showClose: true, duration: 1000, type: 'error' });
                             }
-                        }).catch(function (error) {  //发生错误时的处理
-                            vm.$message({ message: '用户信息保存失败', showClose: true, duration: 1000, type: 'error'});
-                        });
+                        })
                     } else {
                         this.$message({ message: '请填写完必填项', showClose: true, duration: 1000, type: 'warning' });
                     }
@@ -401,10 +410,13 @@
                 this.userData.id = row.id;
                 axios.post('<%=request.getContextPath()%>/sys/user/ele/userDetailData' , this.userData)
                     .then(function(response){
-                        vm.userData = response.data
-                    }).catch(function(error){
-                    vm.$message({ message: '用户信息获取失败', showClose: true, type: 'error', duration: 1000 });
-                })
+                        var result = response.data;
+                        if(result.code == 100){
+                            vm.userData = result.data;
+                        } else {
+                            vm.$message({ message: "查询失败", showClose: true, type: 'error', duration: 1000 });
+                        }
+                    })
             },
             //提示是否删除用户
             isDeleteUser(row) {
@@ -417,9 +429,11 @@
             },
             //删除用户
             deleteUser(user){
-                axios.post('<%=request.getContextPath()%>/sys/user/ele/deleteUser', user).then(response => {
-                    if(response.data){
-                        this.$message({ type: 'success', showClose: true, message: '删除成功!', duration: 1000,
+                axios.post('<%=request.getContextPath()%>/sys/user/ele/deleteUser', user)
+                .then(response => {
+                    var result = response.data;
+                    if(result.code == 100){
+                        this.$message({ type: 'success', showClose: true, message: result.msg, duration: 1000,
                             onClose: function(){
                                 vm.query();
                             }
@@ -427,8 +441,6 @@
                     } else {
                         this.$message({ type: 'error', showClose: true, message: '删除失败!' ,duration: 1000});
                     }
-                }).catch(error => {
-                    this.$message({ type: 'error', showClose: true, message: '删除失败!' ,duration: 1000});
                 })
             },
         },

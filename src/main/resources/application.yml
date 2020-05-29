@@ -20,3 +20,4 @@ server:
     jsp:
       init-parameters:
         development: true
+  port: 9999
